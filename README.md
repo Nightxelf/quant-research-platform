@@ -76,12 +76,3 @@ Open the local Vite URL shown in the terminal to use the dashboard.
 ```bash
 python -m pytest -q
 ```
-
-## Roadmap
-
-Planned enhancements include:
-
-- richer backtesting with slippage and position sizing
-- more advanced factor research workflows
-- live portfolio monitoring and scenario analysis
-- richer charting and downloadable reports
