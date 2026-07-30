@@ -1,17 +1,18 @@
 # Quant Research Platform
 
-A modern quant research starter built with a React frontend and Python analytics backend. It provides a simple workflow for downloading market data, building factor signals, optimizing portfolios, and evaluating strategies.
+A polished quant research dashboard built with React and FastAPI for exploring stocks, testing factor ideas, optimizing portfolios, and reviewing performance metrics in one place.
 
-## Features
+## What it does
 
-- Download historical market data with yfinance
-- Create factor signals for low volatility, momentum, and value
-- Optimize portfolios with equal-weight and mean-variance methods
-- Run a basic backtest with transaction-cost handling
-- Compute performance and risk metrics including CAGR, Sharpe, Sortino, drawdown, VaR, and CVaR
-- Visualize the workflow through a React dashboard
+- Download historical market data for selected stocks with yfinance
+- Build factor signals for low volatility, momentum, and value
+- Compare equal-weight and mean-variance portfolio optimization
+- Run a backtest with transaction-cost handling
+- Review performance and risk metrics such as CAGR, Sharpe, Sortino, drawdown, VaR, and CVaR
+- Visualize equity curves and drawdowns through a modern React UI
+- Export analysis results as CSV
 
-## Tech Stack
+## Tech stack
 
 - Python
 - pandas / NumPy / SciPy
@@ -19,7 +20,7 @@ A modern quant research starter built with a React frontend and Python analytics
 - React + Vite
 - yfinance
 
-## Project Structure
+## Project structure
 
 ```text
 quant_research_platform/
@@ -32,26 +33,29 @@ requirements.txt
 tests/
 ```
 
-## Getting Started
+## Getting started
 
-### 1. Clone and install dependencies
+### 1. Install Python dependencies
 
 ```bash
-git clone <your-repo-url>
-cd Quant Research Platform
 pip install -r requirements.txt
+```
+
+### 2. Install frontend dependencies
+
+```bash
 cd frontend
 npm install
 ```
 
-### 2. Start the backend
+### 3. Start the backend
 
 ```bash
 cd ..
 python server.py
 ```
 
-### 3. Start the frontend
+### 4. Start the frontend
 
 ```bash
 cd frontend
@@ -63,7 +67,7 @@ Open the local Vite URL shown in the terminal to use the dashboard.
 ## Testing
 
 ```bash
-pytest -q
+python -m pytest -q
 ```
 
 ## Roadmap
@@ -71,6 +75,6 @@ pytest -q
 Planned enhancements include:
 
 - richer backtesting with slippage and position sizing
-- more advanced factor research
-- equity curve and drawdown charts
-- CSV/Excel export for research results
+- more advanced factor research workflows
+- live portfolio monitoring and scenario analysis
+- richer charting and downloadable reports
