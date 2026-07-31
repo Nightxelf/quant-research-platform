@@ -117,6 +117,26 @@ class AnalyticsTests(unittest.TestCase):
         self.assertTrue(np.isfinite(result["drawdown"].iloc[-1]))
         self.assertGreaterEqual(result["drawdown"].min(), 0.0)
 
+    def test_run_backtest_calculates_positive_drawdown(self):
+        prices = pd.DataFrame(
+            {
+                "A": [100, 110, 105, 108],
+                "B": [100, 100, 100, 100],
+                "C": [100, 100, 100, 100],
+            },
+            index=pd.date_range("2024-01-01", periods=4, freq="D"),
+        )
+
+        result = run_backtest(prices, rebalance=1, transaction_cost=0.0)
+        self.assertGreater(result["drawdown"].max(), 0.0)
+        self.assertEqual(result["drawdown"].iloc[0], 0.0)
+
+    def test_calculate_metrics_max_drawdown(self):
+        returns = pd.Series([0.1, -0.2, 0.05], index=pd.date_range("2024-01-01", periods=3, freq="D"))
+        metrics = calculate_metrics(returns)
+
+        self.assertAlmostEqual(metrics["max_drawdown"], 0.2, places=6)
+
 
 if __name__ == "__main__":
     unittest.main()

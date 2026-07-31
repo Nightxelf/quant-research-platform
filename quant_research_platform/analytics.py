@@ -35,7 +35,7 @@ def calculate_metrics(
 
     running_max = cumulative.cummax()
     drawdowns = (cumulative / running_max) - 1
-    max_drawdown = float(max(drawdowns.min(), 0.0))
+    max_drawdown = float(-drawdowns.min()) if drawdowns.min() < 0 else 0.0
 
     if benchmark_returns is not None:
         benchmark_returns = benchmark_returns.astype(float).reindex(returns.index).dropna()
@@ -172,8 +172,7 @@ def run_backtest(
     portfolio_series = pd.Series(portfolio_returns, index=returns.index)
     equity_curve = (1 + portfolio_series).cumprod()
     running_max = equity_curve.cummax()
-    drawdown = (equity_curve / running_max - 1).clip(lower=0) * -1
-    drawdown = drawdown.abs()
+    drawdown = (equity_curve / running_max - 1).clip(upper=0).abs()
     return {
         "portfolio_returns": portfolio_series,
         "equity_curve": equity_curve,
