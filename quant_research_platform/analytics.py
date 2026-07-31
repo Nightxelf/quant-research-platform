@@ -5,8 +5,12 @@ import pandas as pd
 from scipy.optimize import minimize
 
 
-def calculate_metrics(returns: pd.Series, risk_free_rate: float = 0.0) -> dict[str, float]:
-    """Calculate common performance and risk metrics."""
+def calculate_metrics(
+    returns: pd.Series,
+    risk_free_rate: float = 0.0,
+    benchmark_returns: pd.Series | None = None,
+) -> dict[str, float]:
+    """Calculate common performance and risk metrics, including benchmark-relative measures."""
     if returns.empty:
         return {
             "cagr": 0.0,
@@ -20,6 +24,7 @@ def calculate_metrics(returns: pd.Series, risk_free_rate: float = 0.0) -> dict[s
             "cvar_95": 0.0,
         }
 
+    returns = returns.astype(float)
     cumulative = (1 + returns).cumprod()
     cagr = cumulative.iloc[-1] ** (1 / len(returns)) - 1
 
@@ -30,11 +35,33 @@ def calculate_metrics(returns: pd.Series, risk_free_rate: float = 0.0) -> dict[s
 
     running_max = cumulative.cummax()
     drawdowns = (cumulative / running_max) - 1
-    max_drawdown = max(drawdowns.min(), 0.0)
+    max_drawdown = float(max(drawdowns.min(), 0.0))
 
-    beta = 0.0
-    alpha = 0.0
-    information_ratio = 0.0
+    if benchmark_returns is not None:
+        benchmark_returns = benchmark_returns.astype(float).reindex(returns.index).dropna()
+        returns_aligned = returns.reindex(benchmark_returns.index).dropna()
+        benchmark_aligned = benchmark_returns.reindex(returns_aligned.index).dropna()
+        if len(returns_aligned) >= 2 and len(benchmark_aligned) >= 2:
+            covariance = np.cov(returns_aligned, benchmark_aligned)[0, 1]
+            benchmark_variance = np.var(benchmark_aligned)
+            beta = covariance / benchmark_variance if benchmark_variance != 0 else 0.0
+            portfolio_return = returns_aligned.mean()
+            benchmark_return = benchmark_aligned.mean()
+            alpha = portfolio_return - (risk_free_rate + beta * (benchmark_return - risk_free_rate))
+            active_returns = returns_aligned - benchmark_aligned
+            information_ratio = (
+                active_returns.mean() / active_returns.std(ddof=0)
+                if active_returns.std(ddof=0) != 0 else 0.0
+            )
+        else:
+            beta = 0.0
+            alpha = 0.0
+            information_ratio = 0.0
+    else:
+        beta = 0.0
+        alpha = 0.0
+        information_ratio = 0.0
+
     var_95 = float(np.percentile(returns, 5))
     cvar_95 = float(returns[returns <= var_95].mean()) if (returns <= var_95).any() else 0.0
 
@@ -144,7 +171,9 @@ def run_backtest(
 
     portfolio_series = pd.Series(portfolio_returns, index=returns.index)
     equity_curve = (1 + portfolio_series).cumprod()
-    drawdown = 1 - equity_curve / equity_curve.cummax()
+    running_max = equity_curve.cummax()
+    drawdown = (equity_curve / running_max - 1).clip(lower=0) * -1
+    drawdown = drawdown.abs()
     return {
         "portfolio_returns": portfolio_series,
         "equity_curve": equity_curve,

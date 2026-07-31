@@ -22,6 +22,19 @@ class AnalyticsTests(unittest.TestCase):
         self.assertIn("var_95", metrics)
         self.assertIn("cvar_95", metrics)
 
+    def test_calculate_metrics_with_benchmark_produces_risk_metrics(self):
+        returns = pd.Series([0.05, 0.02, -0.02, 0.03, 0.01], index=pd.date_range("2024-01-01", periods=5, freq="D"))
+        benchmark = pd.Series([0.01, 0.01, -0.01, 0.02, 0.00], index=returns.index)
+
+        metrics = calculate_metrics(returns, risk_free_rate=0.0, benchmark_returns=benchmark)
+
+        self.assertTrue(np.isfinite(metrics["beta"]))
+        self.assertTrue(np.isfinite(metrics["alpha"]))
+        self.assertTrue(np.isfinite(metrics["information_ratio"]))
+        self.assertGreater(metrics["beta"], 0.0)
+        self.assertGreater(metrics["alpha"], 0.0)
+        self.assertGreater(metrics["information_ratio"], 0.0)
+
     def test_create_factor_scores_uses_ranked_signal(self):
         prices = pd.DataFrame(
             {
@@ -101,6 +114,8 @@ class AnalyticsTests(unittest.TestCase):
         self.assertIn("equity_curve", result)
         self.assertGreaterEqual(result["equity_curve"].shape[0], 1)
         self.assertTrue(np.isfinite(result["equity_curve"].iloc[-1]))
+        self.assertTrue(np.isfinite(result["drawdown"].iloc[-1]))
+        self.assertGreaterEqual(result["drawdown"].min(), 0.0)
 
 
 if __name__ == "__main__":

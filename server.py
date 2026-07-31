@@ -31,7 +31,8 @@ def analyze(payload: dict):
     returns = prices.pct_change().dropna()
 
     first_series = returns.iloc[:, 0] if not returns.empty else pd.Series(dtype=float)
-    metrics = calculate_metrics(first_series, risk_free_rate=0.0)
+    benchmark_returns = returns.mean(axis=1) if not returns.empty else pd.Series(dtype=float)
+    metrics = calculate_metrics(first_series, risk_free_rate=0.0, benchmark_returns=benchmark_returns)
     weights = optimize_portfolio(returns, method=optimization_method)
     backtest = run_backtest(prices, factor_name=factor_name, rebalance=2, transaction_cost=0.001, weights=weights)
 
@@ -55,7 +56,9 @@ def export_results(payload: dict):
     prices = download_stock_data(tickers, start_date, end_date)
     returns = prices.pct_change().dropna()
 
-    metrics = calculate_metrics(returns.iloc[:, 0] if not returns.empty else pd.Series(dtype=float), risk_free_rate=0.0)
+    first_series = returns.iloc[:, 0] if not returns.empty else pd.Series(dtype=float)
+    benchmark_returns = returns.mean(axis=1) if not returns.empty else pd.Series(dtype=float)
+    metrics = calculate_metrics(first_series, risk_free_rate=0.0, benchmark_returns=benchmark_returns)
     weights = optimize_portfolio(returns, method=optimization_method)
     backtest = run_backtest(prices, factor_name=factor_name, rebalance=2, transaction_cost=0.001, weights=weights)
 

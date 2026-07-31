@@ -64,6 +64,11 @@ function App() {
     window.URL.revokeObjectURL(url);
   };
 
+  const formatMetricValue = (value) => {
+    const numericValue = Number(value);
+    return Number.isFinite(numericValue) ? numericValue.toFixed(4) : '—';
+  };
+
   const renderChart = (series, color, label) => {
     if (!series.length) return null;
     const width = 420;
@@ -171,7 +176,7 @@ function App() {
               {Object.entries(metrics).map(([key, value]) => (
                 <div key={key} className="metric-pill">
                   <span>{key}</span>
-                  <strong>{Number(value).toFixed(4)}</strong>
+                  <strong>{formatMetricValue(value)}</strong>
                 </div>
               ))}
             </div>
@@ -187,7 +192,7 @@ function App() {
               {Object.entries(weights).map(([key, value]) => (
                 <div key={key} className="metric-pill">
                   <span>{key}</span>
-                  <strong>{Number(value).toFixed(4)}</strong>
+                  <strong>{formatMetricValue(value)}</strong>
                 </div>
               ))}
             </div>
