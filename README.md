@@ -14,8 +14,9 @@ A polished quant research dashboard built with React and FastAPI for exploring s
 - Review performance and risk metrics such as CAGR, Sharpe, Sortino, drawdown, VaR, and CVaR
 - Visualize equity curves and drawdowns through a modern React UI
 - Export analysis results as CSV
+<img width="1896" height="867" alt="Screenshot 2026-07-31 054856" src="https://github.com/user-attachments/assets/5c625b3b-3c4e-4a65-bad3-b8cc75919826" />
+<img width="1893" height="917" alt="Screenshot 2026-07-31 054918" src="https://github.com/user-attachments/assets/f7d6adb0-68b9-4df7-9f6d-9c34ceeede9c" />
 
-<img width="1898" height="935" alt="Screenshot 2026-07-31 053958" src="https://github.com/user-attachments/assets/d946c8b1-a1e6-4e91-879d-85cf85e8a3d6" />
 
 
 ## Tech stack
